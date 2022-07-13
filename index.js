@@ -12,7 +12,7 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["@typescript-eslint", "import", "foldernaming"],
-  relues: {
+  rules: {
     "import/no-default-export": "error"
   }
 };
