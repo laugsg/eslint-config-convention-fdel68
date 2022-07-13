@@ -1,0 +1,17 @@
+{
+  "name": "eslint-config-convention-fdel68",
+  "version": "1.0.0",
+  "description": "Filesystem and Naming conventions for exports, variables, components name, required files and folders to follow the correct format for Package structure.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-plugin-foldernaming": "^1.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "typescript-eslint": "0.0.1-alpha.0"
+  }
+}
