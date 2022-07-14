@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "eslint-plugin-filenames-simple": "^0.7.0",
     "eslint-plugin-foldernaming": "^1.0.4",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-react": "^7.30.1",
     "typescript-eslint": "0.0.1-alpha.0"
   }
 }
