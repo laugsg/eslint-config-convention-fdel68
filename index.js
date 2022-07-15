@@ -15,7 +15,8 @@ module.exports = {
     "@typescript-eslint", 
     "import", 
     "filenames-simple", 
-    "react", 
+    "react",
+    "filename-consistency",
   ],
   rules: {
     "import/no-default-export": "error",
@@ -25,5 +26,9 @@ module.exports = {
     ],
     "filenames-simple/naming-convention": ["error", { "rule": "kebab-case" }],
     "react/jsx-pascal-case": 2,
+    "filename-consistency/match": [ 
+      "error",
+      ["kebab"]
+    ]
   },
 };
