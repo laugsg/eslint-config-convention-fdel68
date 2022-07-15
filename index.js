@@ -11,7 +11,13 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "import", "filenames-simple", "react", "foldernaming"],
+  plugins: [
+    "@typescript-eslint", 
+    "import", 
+    "filenames-simple", 
+    "react", 
+    "repo-structure",
+  ],
   rules: {
     "import/no-default-export": "error",
     "@typescript-eslint/naming-convention": [
@@ -19,7 +25,10 @@ module.exports = {
       { selector: "typeLike", format: ["PascalCase"] },
     ],
     "filenames-simple/naming-convention": ["error", { "rule": "kebab-case" }],
-    "foldernaming/match-regex": [2, "^[a-z-]+$", './packages/'],
-    "react/jsx-pascal-case": 2
+    "react/jsx-pascal-case": 2,
+    "repo-structure/file-structure": "error",
   },
+  "settings": {
+    "repo-structure/config-path": ".repo-structurerc.json"
+  }
 };
