@@ -16,7 +16,6 @@ module.exports = {
     "import", 
     "filenames-simple", 
     "react", 
-    "repo-structure",
   ],
   rules: {
     "import/no-default-export": "error",
@@ -26,9 +25,5 @@ module.exports = {
     ],
     "filenames-simple/naming-convention": ["error", { "rule": "kebab-case" }],
     "react/jsx-pascal-case": 2,
-    "repo-structure/file-structure": "error",
   },
-  "settings": {
-    "repo-structure/config-path": ".repo-structurerc.json"
-  }
 };
