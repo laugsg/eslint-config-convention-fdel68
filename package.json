@@ -13,6 +13,7 @@
     "eslint-plugin-filenames-simple": "^0.7.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.30.1",
+    "folderslint": "^1.0.0",
     "typescript-eslint": "0.0.1-alpha.0"
   }
 }
