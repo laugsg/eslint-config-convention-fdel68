@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 
+let response = []
+
 /**
  * The order of tested values determine the correctness of the if/else validation
  * because chromatic.stories includes the "stories" word, for this reason
@@ -18,9 +20,11 @@ let rootLevel = {
     stories: 0,
     chromatic: 0
 };
+
 function rootFileChecker(filename){
   return rootLevel[filename] === 0
 }
+
 function rootChecker(filename) {
     if (filename.includes(README)) {
       if(rootFileChecker(README)){
@@ -57,44 +61,51 @@ function rootChecker(filename) {
     }
 }
 
+function validateRootLevel(relativePaths){
+    
+
+  relativePaths.forEach((item) => {
+      const query = item.split('/');
+      /** Root level
+       * query[0] === 'packages' : It means the staged "thing" is part of a component package
+       * query.length === 3 ; It means the "thing" is located in component root
+       * console.log("isFile",fs.lstatSync(item).isFile()) : It means the "thing" is nothing than a file and excluding empty folders
+       */
+      if (
+          query[0] === 'packages' &&
+          query.length === 3 &&
+          fs.lstatSync(item).isFile()
+      ) {
+          const validate = rootChecker(item)
+          if ( typeof validate === "object" ) {
+            response = checkResponse(validate.message)
+          }
+      }
+  });
+
+  Object.keys(rootLevel).map((filename) => {
+    const validate = rootFileChecker(filename)
+    const message = `Should be at least 1 ${filename} file in component root folder`
+    if ( validate ) {
+      response = checkResponse(message)
+    }
+  })
+
+  return response
+
+}
+
+function checkResponse(message){
+  if ( response.length > 0 ){
+    return response.concat([message])
+  } else {
+    return ['0', message]
+  }
+}
+
 module.exports = (absolutePaths) => {
     const cwd = process.cwd();
     const relativePaths = absolutePaths.map((file) => path.relative(cwd, file));
-    
-    let response = []
 
-    relativePaths.forEach((item) => {
-        const query = item.split('/');
-        /** Root level
-         * query[0] === 'packages' : It means the staged "thing" is part of a component package
-         * query.length === 3 ; It means the "thing" is located in component root
-         * console.log("isFile",fs.lstatSync(item).isFile()) : It means the "thing" is nothing than a file and excluding empty folders
-         */
-        if (
-            query[0] === 'packages' &&
-            query.length === 3 &&
-            fs.lstatSync(item).isFile()
-        ) {
-            const validate = rootChecker(item)
-            if ( typeof validate === "object" ) {
-              response = ['0', validate.message]
-            }
-        }
-    });
-
-    // console.log("rootLevel",rootLevel)
-
-    Object.keys(rootLevel).map((filename) => {
-      const validate = rootFileChecker(filename)
-      const message = `Should be at least 1 ${filename} file in component root folder`
-      if ( validate ) {
-        if ( response.length > 0 ){
-          response.push(message)
-        } else {
-          response = ['0', message]
-        }
-      }
-    })
-
-    return response
+    return validateRootLevel(relativePaths)
 };
