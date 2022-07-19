@@ -16,5 +16,5 @@ module.exports = (absolutePaths) => {
       return file;
     }
   });
-  return [`npx eslint -c convention-FDEL68.naming-rules.json ${filteredPaths.join(" ")}`];
+  return [`npx eslint -c convention-FDEL68.naming-rules.config.json ${filteredPaths.join(" ")}`];
 };
