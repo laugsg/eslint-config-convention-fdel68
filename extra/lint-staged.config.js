@@ -1,15 +1,20 @@
-const path = require('path');
+const path = require("path");
 module.exports = (absolutePaths) => {
-    const cwd = process.cwd();
-    const relativePaths = absolutePaths.map((file) => path.relative(cwd, file));
+  const cwd = process.cwd();
+  const relativePaths = absolutePaths.map((file) => path.relative(cwd, file));
+  const filteredPaths = relativePaths.filter((file) => {
     /** Remove files
      * JSON and Markdown files should not be linted,
-     * they are filtered out from paths to provide just allowed ones.  
+     * they are filtered out from paths to provide just allowed ones.
      */
-    const filteredPaths = relativePaths.filter((file) => {
-        if (path.extname(file) !== '.json' && path.extname(file) !== '.md' && path.extname(file) !== '') {
-            return file
-        }
-    });
-    return [`npx eslint -c convention-FDEL68.json ${filteredPaths.join(' ')}`];
+    if (
+      ! file.includes(".config") &&
+      path.extname(file) !== ".json" &&
+      path.extname(file) !== ".md" &&
+      path.extname(file) !== ""
+    ) {
+      return file;
+    }
+  });
+  return [`npx eslint -c convention-FDEL68.json ${filteredPaths.join(" ")}`];
 };
