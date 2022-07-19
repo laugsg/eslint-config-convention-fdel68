@@ -4,11 +4,11 @@ Filesystem and Naming conventions for exports, variables, components name, requi
 
 Convention stablished in [FDEL68](https://cuponation.atlassian.net/jira/software/c/projects/FDEL/boards/322?modal=detail&selectedIssue=FDEL-68&assignee=6175c9a72097220071fda78e): Create Linting for package filesystem structure and naming convention.
 
-It requires two extra files that should be at the project root `lint-staged.config.js` and `convention-FDEL68.json`.
+It requires two extra files that should be at the project root `convention-fdel68-naming.config.js` and `convention-FDEL68.naming-rules.config.json`.
 
-lint-staged.config.js will receive just the commited files, then will filter them removing markdown files and json files to lint just component related ones.
+convention-fdel68-naming.config.js will receive just the commited files, then will filter them removing markdown files and json files to lint just component related ones.
 
-convention-FDEL68.json will provide the convention-FDEL68.json for file rules. It's just a custom configuration file which implements the convention package.
+convention-FDEL68.naming-rules.config.json will provide the convention-fdel68-naming.config.js for file rules. It's just a custom configuration file which implements the convention package.
 
 ## Run at pre-commit only
 
@@ -18,7 +18,7 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
 
 
 * **Naming Config**
-1. drop in project root `convention-fdel68-naming.config.js` and `convention-FDEL68.naming-rules.json`
+1. drop in project root `convention-fdel68-naming.config.js` and `convention-FDEL68.naming-rules.config.json`
 2. include in lint-staged command at package.json `yarn lint-staged --config convention-FDEL68-naming.config.js`
 
 * **File System Structure**
