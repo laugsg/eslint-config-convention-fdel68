@@ -19,7 +19,7 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
 
 * **Naming Config**
 1. project root : drop the files `convention-FDEL68-naming.config.js` and `convention-FDEL68.naming-rules.config.json`
-2. package.json : include in lint-staged command `yarn lint-staged --config convention-FDEL68-naming.config.js`
+2. .husky/pre-commit : include in lint-staged command `yarn lint-staged --config convention-FDEL68-naming.config.js`
 
 * **File System Structure**
 
