@@ -1,12 +1,4 @@
 const path = require("path");
-const fileSystemConfig = require("./convention-FDEL68-filesystem.config");
-
-/** Convention FDEL-68
- * Filename should be one of the allowed variants
- * for lint-staged configuration files.
- * - lint-staged.config (JS | MJS)
- * - .lintstagedrc (JS | JSON | YML | MJS | CJS)
- */
 
 module.exports = (absolutePaths) => {
   const cwd = process.cwd();
