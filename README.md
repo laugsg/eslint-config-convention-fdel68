@@ -31,7 +31,7 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
 
 * Query : Top Level
     1. packages/component-name
-* Query : Component level
+* Query : Root level (Component)
     1. ../files-in-root
     2. ../src/
 * Query : Src level
@@ -56,23 +56,26 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
           1. should be named export
 
 * File system
-  * component-name/ : Component level
-      1. should have a README
-      2. should have a stories
-      3. should have a chromatic.stories
-  
-  * sub-folders : 
-      1. /components
-      2. /utils
+    * [x] component-name/ : Component level
+        1. should have a README
+        2. should have a stories
+        3. should have a chromatic.stories
 
-1. all sub-components should live inside src/components folder
-2. all utilities should live inside src/utils folder
+  * Misc : 
+      1. [x] all sub-components should live inside src/components folder
+      2. [x] all utilities should live inside src/utils folder
+      3. [x] unexpected folder name under /src (allowed only /components and /utils
+      4. [ ] should have a index file inside each folder
 
+## all sub-components should live inside src/components folder
 
+A Compoenent package has the following structure:
+* Component folder (as root)
+    * src folder (component files)
+        * utils (inside src folder)
+    * finally, files related to configs and testing
 
-
-
-
+Because of this structure, where src/ folder is the only folder in the component package, we could assume that _"any other folder wold be a sub-component"_. Then we can _invalidate_ the presence of any other folder than src.
 
 
 
