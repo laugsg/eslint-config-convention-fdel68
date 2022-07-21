@@ -64,17 +64,30 @@ function validatefilesInRoot(relativePaths) {
         const query = item.split(path.sep);
         // console.log("query",query)
         const splittedPath = query.slice(0, 3)
+        // console.log("splittedPath",splittedPath)
+        const baseRoute = path.join(...splittedPath)
+        // console.log("baseRoute",baseRoute)
         if (query[0] === 'packages' && query.length >= 3) {
-          if (fs.lstatSync(path.join(...splittedPath)).isFile()) {
+          if (fs.lstatSync(baseRoute).isFile()) {
+            // console.log("baseRoute",baseRoute)
             const validate = checkFilesInComponentRoot(item);
             if (typeof validate === 'object') {
               response = checkResponse(validate.message);
             }
           }
-          else if (fs.lstatSync(path.join(...splittedPath)).isDirectory()) {
+          else if (fs.lstatSync(baseRoute).isDirectory()) {
             if (splittedPath[2] === 'src' || splittedPath[2] === 'dist') {
               // console.log("should be an index", item)
-              if (fs.lstatSync(path.join(...query.slice(0, 4))).isDirectory()) {
+              const baseSubFolder = path.join(...query.slice(0, 4))
+              if (fs.lstatSync(baseSubFolder).isDirectory()) {
+                console.log("baseSubFolder",baseSubFolder)
+                const componentFolder = getFolder(baseSubFolder)
+                console.log("componentFolder",componentFolder)
+                // const query = item.split(path.sep);
+                const folderTree = getTree(false, componentFolder, `${_dirname}/packages/${componentFolder}`)
+                console.log("folderTree",folderTree)
+                // console.log("src tree",fs.readdirSync(path.resolve(baseSubFolder)))
+                // console.log("query",query)
                       if (query[3] !== 'components' && query[3] !== 'utils'){
                           response = checkResponse(`Unexpected ${path.join(...query.slice(3, 4))}/ folder name under /src (allowed only /components and /utils)`)
                         }
@@ -112,6 +125,8 @@ module.exports = {
     const cwd = process.cwd();
     const relativePaths = absolutePaths.map((file) => path.relative(cwd, file));
 
+    console.log("relativePaths",relativePaths)
+
 
 
   /** Get directory : list
@@ -119,42 +134,44 @@ module.exports = {
    * to read the Component folder to validate its structure.
    * @returns {array} example: ['aaa', 'bbb']
    */
-  const componentPackages = [...new Set(relativePaths.map((item) => {
-    const query = item.split(path.sep);
-    if (
-      query[0] === 'packages' &&
-      fs.lstatSync(path.join(...query.slice(0, 2))).isDirectory()
-      ) {
-        return query[1]
-      }
+  const componentPackages = [...new Set(relativePaths.map((stringPath) => {
+    return getFolder(stringPath)
     }))]
 
-    /** Get directory tree
-     * Use the list of directories to read them
-     * and provide the directory tree
-     * @returns {array} example: ['index.ts', 'folder', 'file.js']
-     */
-    const componentTree = componentPackages.map(folder => {
-      // console.log("folder",folder)
-      const root = fs.readdirSync(path.resolve(__dirname, 'packages', folder))
-      // console.log("root", root)
-      return root.map(file => {
-        // console.log("folder[index]",folder[index])
-        // console.log("file",file)
-        const fullPath = path.resolve(__dirname, 'packages', folder, file)
-        const query = fullPath.split(path.sep);
-        // console.log("query",query)
-        const shortPath = query.splice(4, query.length - 1)
-        // console.log("shortPath",shortPath)
-        const normalizedPath = path.join(...shortPath)
-        // console.log("normalizedPath",normalizedPath)
-        return normalizedPath
-      })
-      // return root
-    })
-    console.log("componentTree",componentTree)
+    const componentTree = getTree(componentPackages)
+    console.log("componentTree", componentTree)
+    
+    console.log("componentTree",componentTree.map( folder => {
+      return validatefilesInRoot(folder);
+    }))
 
-    return validatefilesInRoot(relativePaths);
-    // return ['0']
+    // return validatefilesInRoot(relativePaths);
+    return ['0']
 }
+}
+
+const getFolder = (stringPath) => {
+  const query = stringPath.split(path.sep);
+  if (
+    query[0] === 'packages' &&
+    fs.lstatSync(path.join(...query.slice(0, 2))).isDirectory()
+    ) {
+      return query[1]
+    }
+  }
+
+
+const getTree = (componentPackages) => {
+  console.log("lecture", componentPackages)
+  return componentPackages.map(folder => {
+    const root = fs.readdirSync(path.resolve(__dirname, 'packages', folder))
+    return root.map(file => {
+      const fullPath = path.resolve(__dirname, 'packages', folder, file)
+      console.log("fullPath", fullPath)
+      const query = fullPath.split(path.sep);
+      const shortPath = query.splice(4, query.length - 1)
+      const normalizedPath = path.join(...shortPath)
+      return normalizedPath
+    })
+  })
 }
