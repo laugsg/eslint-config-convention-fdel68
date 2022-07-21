@@ -21,10 +21,6 @@ let filesInRoot = {
     chromatic: 0
 };
 
-// function checkIsFileDeclared(filename) {
-//     return filesInRoot[filename] === 0;
-// }
-
 function checkFileIsNotPresent(filename) {
     return filesInRoot[filename] === 0;
 }
@@ -40,48 +36,6 @@ function checkIsFileDeclared(filename) {
       };
   }
 }
-
-// function checkFilesInComponentRoot(filename) {
-//     if (filename.includes(README)) {
-//         if (checkIsFileDeclared(README)) {
-//             filesInRoot.README = filesInRoot.README + 1;
-//             return true;
-//         } else {
-//             return {
-//                 success: false,
-//                 message: `Not allowed more than 1 ${README} file`
-//             };
-//         }
-//     } else if (filename.includes(chromatic)) {
-//         if (checkIsFileDeclared(chromatic)) {
-//             filesInRoot[chromatic] = filesInRoot[chromatic] + 1;
-//             return true;
-//         } else {
-//             return {
-//                 success: false,
-//                 message: `Not allowed more than 1 ${chromatic} file`
-//             };
-//         }
-//     } else if (filename.includes(stories)) {
-//         if (checkIsFileDeclared(stories)) {
-//             filesInRoot.stories = filesInRoot.stories + 1;
-//             return true;
-//         } else {
-//             return {
-//                 success: false,
-//                 message: `Not allowed more than 1 ${stories} file`
-//             };
-//         }
-//     } else if (
-//         !filename.includes(README) &&
-//         !filename.includes(chromatic) &&
-//         !filename.includes(stories)
-//     ) {
-//         return `No validation required ${filename}`;
-//     } else {
-//         return false;
-//     }
-// }
 
 function checkFilesInComponentRoot(filename) {
   if (filename.includes(README)) {
@@ -105,58 +59,40 @@ function validatefilesInRoot(relativePaths) {
 
     relativePaths.forEach((item) => {
         const query = item.split(path.sep);
-        /** Root level
-         * query[0] === 'packages' : It means the staged "thing" is part of a component package
-         * query.length === 3 ; It means the "thing" is located in component root
-         * console.log("isFile",fs.lstatSync(item).isFile()) : It means the "thing" is nothing than a file and excluding empty folders
-         */
-        if (
-            query[0] === 'packages' &&
-            query.length === 3 &&
-            fs.lstatSync(item).isFile()
-        ) {
+        const splittedPath = query.slice(0, 3)
+        if (query[0] === 'packages' && query.length >= 3) {
+          if (fs.lstatSync(path.join(...splittedPath)).isFile()) {
             const validate = checkFilesInComponentRoot(item);
             if (typeof validate === 'object') {
-                response = checkResponse(validate.message);
+              response = checkResponse(validate.message);
             }
-        }
-
-        /** Validate Src
-             *
-             */
-         if (query.length >= 3) {
-          const joinPath = query.slice(0, 3);
-          if (fs.lstatSync(path.join(...joinPath)).isDirectory()) {
-              if (joinPath[2] === 'src' || joinPath[2] === 'dist') {
-                  if (fs.lstatSync(path.join(...query.slice(0, 4))).isDirectory()) {
-                      if (query[3] !== 'components' && query[3] !== 'utils'){
-                        response = checkResponse(`Unexpected ${path.join(...query.slice(3, 4))}/ folder name under /src (allowed only /components and /utils)`)
-                      }
-                  }
-              } else {
-                  response = checkResponse(
-                      `${joinPath[2]}/ as sub-component or utility should be under src/, only dist/ or src/ allowed in root.`
-                  );
-              }
           }
-      }
+          else if (fs.lstatSync(path.join(...splittedPath)).isDirectory()) {
+            if (splittedPath[2] === 'src' || splittedPath[2] === 'dist') {
+              console.log("should be an index", item)
+              if (fs.lstatSync(path.join(...query.slice(0, 4))).isDirectory()) {
+                      if (query[3] !== 'components' && query[3] !== 'utils'){
+                          response = checkResponse(`Unexpected ${path.join(...query.slice(3, 4))}/ folder name under /src (allowed only /components and /utils)`)
+                        }
+                    }
+                } else {
+                response = checkResponse(
+                    `${splittedPath[2]}/ as sub-component or utility should be under src/, only dist/ or src/ allowed in root.`
+                );
+            }
+          }
+        }
 
 
     });
 
-    // Object.keys(filesInRoot).map((filename) => {
-    //     const validate = checkIsFileDeclared(filename);
-    //     const message = `Should be at least 1 ${filename} file in component root folder`;
-    //     if (validate) {
-    //         response = checkResponse(message);
-    //     }
-    // });
-
+    // console.log("response", response)
+    
     Object.keys(filesInRoot).map((filename) => {
       if (checkFileIsNotPresent(filename)){
         response = checkResponse(`Should be at least 1 ${filename} file in component root folder`)
       }
-  });
+    });
 
     return response;
 }
@@ -169,10 +105,12 @@ function checkResponse(message) {
     }
 }
 
-module.exports = (absolutePaths) => {
+module.exports = {
+  "packages/**/*.{ts,tsx}":(absolutePaths) => {
     const cwd = process.cwd();
     const relativePaths = absolutePaths.map((file) => path.relative(cwd, file));
 
     return validatefilesInRoot(relativePaths);
     // return ['0']
-};
+}
+}
