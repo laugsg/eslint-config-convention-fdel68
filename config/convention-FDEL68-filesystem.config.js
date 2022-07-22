@@ -234,7 +234,6 @@ module.exports = {
         const filesCheck = componentTree.map((folder) => {
             return validatefilesInRoot(folder);
         });
-        console.log("filesCheck", filesCheck)
 
         let empty = [];
         filesCheck.forEach((res, iter) => {
