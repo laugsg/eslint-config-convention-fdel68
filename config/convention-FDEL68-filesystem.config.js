@@ -150,7 +150,7 @@ function validatefilesInRoot(relativePaths) {
     Object.keys(filesInRoot).map((filename) => {
         if (checkFileIsNotPresent(filename)) {
             // response = checkResponse(
-            checkResponse(`${folderRoute} Should have a ${filename} file.`);
+            checkResponse(`${folderRoute} Should have ${filename} file.`);
         }
     });
 
@@ -163,36 +163,24 @@ function validateComponentFolders(subFoldersPath) {
     subFoldersPath.map((subFolder) => {
         const query = getQueryArray(subFolder);
         if (query[2] === 'src' || query[2] === 'dist') {
-            // const baseSubFolder = getFolderTree([subFolder])[0];
-            // let indexCount = 0;
-            // baseSubFolder.forEach((path) => {
-            //     if (isFile(path)) {
-            //         const pathQuery = getQueryArray(path);
-            //         if (pathQuery[pathQuery.length - 1].includes('index')) {
-            //             indexCount += 1;
-            //         }
-            //     } else if (isDir(path)) {
-            //       console.log('dir', path);
-            //       // const subFolder = getFolderTree([path])[0];
-            //       // console.log('subFolder', subFolder);
-            //     }
-            // });
-            // if (indexCount < 1) {
-            //     checkResponse(`${subFolder}/ should have a index file.`);
-            // } else if (indexCount > 1) {
-            //     checkResponse(`${subFolder}/ should have only one index file.`);
-            // }
+            recursiveList(subFolder);
 
-            // console.log('recursiveList', recursiveList(subFolder));
-            recursiveList(subFolder)
-
-            // console.log('recursiveChecker', recursiveChecker(subFolder));
-            // response = recursiveChecker(subFolder)
-            // recursiveChecker(subFolder)
-
-            // const baseSubFolder = path.join(...query.slice(0, 4));
-            // console.log("baseSubFolder",baseSubFolder)
-            console.log("query",query)
+            const baseSubFolder = getFolderTree([subFolder])[0].filter((path) =>
+                isDir(path)
+            );
+            if(baseSubFolder.length){
+              baseSubFolder.forEach((dirPath, index) => {
+                  const dirQuery = getQueryArray(dirPath);
+                  console.log('dirQuery', dirQuery);
+                      if (dirQuery[3] !== 'components' && dirQuery[3] !== 'utils') {
+                        checkResponse(
+                              `Unexpected ${dirPath}/ folder name under /src (allowed only /components and /utils)`
+                          );
+                      }
+              });
+            }
+            // const dirFolder = path.join(...query.slice(0, 4));
+            // console.log("query",baseSubFolder)
             // if (isDir(baseSubFolder)) {
             //     if (query[3] !== 'components' && query[3] !== 'utils') {
             //         response = checkResponse(
@@ -203,7 +191,6 @@ function validateComponentFolders(subFoldersPath) {
             //     }
             // }
         } else {
-            // response = checkResponse(
             checkResponse(
                 `${query[2]}/ as sub-component or utility should be under src/, only dist/ or src/ allowed in root.`
             );
@@ -212,7 +199,12 @@ function validateComponentFolders(subFoldersPath) {
     return response;
 }
 
-const recursiveList = (folderSearch, fileList = [], dirList = [], indexCount = 0) => {
+const recursiveList = (
+    folderSearch,
+    fileList = [],
+    dirList = [],
+    indexCount = 0
+) => {
     const baseSubFolder = getFolderTree([folderSearch])[0];
     baseSubFolder.forEach((path) => {
         if (isFile(path)) {
@@ -221,42 +213,19 @@ const recursiveList = (folderSearch, fileList = [], dirList = [], indexCount = 0
             if (pathQuery[pathQuery.length - 1].includes('index')) {
                 indexCount += 1;
             }
-          }
+        }
         if (isDir(path)) {
             dirList.push(path);
-            return recursiveList(path, fileList, dirList)
+            return recursiveList(path, fileList, dirList);
         }
     });
     if (indexCount < 1) {
-        checkResponse(`${folderSearch}/ should have a index file.`);
+        checkResponse(`${folderSearch}/ should have index file.`);
     } else if (indexCount > 1) {
         checkResponse(`${folderSearch}/ should have only one index file.`);
     }
     return [fileList, dirList];
 };
-
-// const recursiveList = (folderSearch, fileList = [], dirList = []) => {
-//   const baseSubFolder = getFolderTree([folderSearch])[0];
-//   baseSubFolder.forEach((path) => {
-//       if (isFile(path)) {
-//           fileList.push(path);
-//       }
-//       if (isDir(path)) {
-//           dirList.push(path);
-//           return recursiveList(path, fileList, dirList)
-//       }
-//   });
-//   return [fileList, dirList];
-// };
-
-
-// function checkResponse(message) {
-//     if (response.length > 0) {
-//         return response.concat([message]);
-//     } else {
-//         return ['The test has fail:', message];
-//     }
-// }
 
 function checkResponse(message) {
     response.push(message);
