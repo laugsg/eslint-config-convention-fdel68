@@ -65,7 +65,7 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
       1. [x] all sub-components should live inside src/components folder
       2. [x] all utilities should live inside src/utils folder
       3. [x] unexpected folder name under /src (allowed only /components and /utils
-      4. [ ] should have a index file inside each folder
+      4. [x] should have a index file inside each folder
 
 ## all sub-components should live inside src/components folder
 
