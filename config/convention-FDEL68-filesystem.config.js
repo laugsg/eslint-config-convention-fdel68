@@ -136,11 +136,11 @@ function validatefilesInRoot(relativePaths) {
     relativePaths.forEach((item) => {
         const query = getQueryArray(item);
         if (query[0] === 'packages' && query.length === 3) {
-            if (fs.lstatSync(item).isFile()) {
+            if (isFile(item)) {
                 folderRoute = `${query[0]}/${query[1]}`;
                 const validate = checkFilesInComponentRoot(item);
                 if (typeof validate === 'object') {
-                  // response = checkResponse(validate.message);
+                    // response = checkResponse(validate.message);
                     checkResponse(validate.message);
                 }
             }
@@ -148,11 +148,9 @@ function validatefilesInRoot(relativePaths) {
     });
 
     Object.keys(filesInRoot).map((filename) => {
-      if (checkFileIsNotPresent(filename)) {
-          // response = checkResponse(
-          checkResponse(
-                `${folderRoute} Should have a ${filename} file.`
-            );
+        if (checkFileIsNotPresent(filename)) {
+            // response = checkResponse(
+            checkResponse(`${folderRoute} Should have a ${filename} file.`);
         }
     });
 
@@ -161,32 +159,96 @@ function validatefilesInRoot(relativePaths) {
 //#endregion
 
 function validateComponentFolders(subFoldersPath) {
-  response = [];
-  // let folderRoute;
-  // folderRoute = `${query[0]}/${query[1]}`;
-  subFoldersPath.map((subFolder) => {
-    const query = getQueryArray(subFolder)
-    if (query[2] === 'src' || query[2] === 'dist') {
-        console.log("should be an index", subFolder)
-        // const baseSubFolder = path.join(...query.slice(0, 4));
-        // if (isDir(baseSubFolder)) {
-        //     if (query[3] !== 'components' && query[3] !== 'utils') {
-        //         response = checkResponse(
-        //             `Unexpected ${path.join(
-        //                 ...query.slice(3, 4)
-        //             )}/ folder name under /src (allowed only /components and /utils)`
-        //         );
-        //     }
-        // }
-    } else {
-      // response = checkResponse(
-      checkResponse(
-            `${query[2]}/ as sub-component or utility should be under src/, only dist/ or src/ allowed in root.`
-        );
-    }
-  })
-  return 'someGood'
+    response = [];
+    subFoldersPath.map((subFolder) => {
+        const query = getQueryArray(subFolder);
+        if (query[2] === 'src' || query[2] === 'dist') {
+            // const baseSubFolder = getFolderTree([subFolder])[0];
+            // let indexCount = 0;
+            // baseSubFolder.forEach((path) => {
+            //     if (isFile(path)) {
+            //         const pathQuery = getQueryArray(path);
+            //         if (pathQuery[pathQuery.length - 1].includes('index')) {
+            //             indexCount += 1;
+            //         }
+            //     } else if (isDir(path)) {
+            //       console.log('dir', path);
+            //       // const subFolder = getFolderTree([path])[0];
+            //       // console.log('subFolder', subFolder);
+            //     }
+            // });
+            // if (indexCount < 1) {
+            //     checkResponse(`${subFolder}/ should have a index file.`);
+            // } else if (indexCount > 1) {
+            //     checkResponse(`${subFolder}/ should have only one index file.`);
+            // }
+
+            // console.log('recursiveList', recursiveList(subFolder));
+            recursiveList(subFolder)
+
+            // console.log('recursiveChecker', recursiveChecker(subFolder));
+            // response = recursiveChecker(subFolder)
+            // recursiveChecker(subFolder)
+
+            // const baseSubFolder = path.join(...query.slice(0, 4));
+            // console.log("baseSubFolder",baseSubFolder)
+            console.log("query",query)
+            // if (isDir(baseSubFolder)) {
+            //     if (query[3] !== 'components' && query[3] !== 'utils') {
+            //         response = checkResponse(
+            //             `Unexpected ${path.join(
+            //                 ...query.slice(3, 4)
+            //             )}/ folder name under /src (allowed only /components and /utils)`
+            //         );
+            //     }
+            // }
+        } else {
+            // response = checkResponse(
+            checkResponse(
+                `${query[2]}/ as sub-component or utility should be under src/, only dist/ or src/ allowed in root.`
+            );
+        }
+    });
+    return response;
 }
+
+const recursiveList = (folderSearch, fileList = [], dirList = [], indexCount = 0) => {
+    const baseSubFolder = getFolderTree([folderSearch])[0];
+    baseSubFolder.forEach((path) => {
+        if (isFile(path)) {
+            fileList.push(path);
+            const pathQuery = getQueryArray(path);
+            if (pathQuery[pathQuery.length - 1].includes('index')) {
+                indexCount += 1;
+            }
+          }
+        if (isDir(path)) {
+            dirList.push(path);
+            return recursiveList(path, fileList, dirList)
+        }
+    });
+    if (indexCount < 1) {
+        checkResponse(`${folderSearch}/ should have a index file.`);
+    } else if (indexCount > 1) {
+        checkResponse(`${folderSearch}/ should have only one index file.`);
+    }
+    return [fileList, dirList];
+};
+
+// const recursiveList = (folderSearch, fileList = [], dirList = []) => {
+//   const baseSubFolder = getFolderTree([folderSearch])[0];
+//   baseSubFolder.forEach((path) => {
+//       if (isFile(path)) {
+//           fileList.push(path);
+//       }
+//       if (isDir(path)) {
+//           dirList.push(path);
+//           return recursiveList(path, fileList, dirList)
+//       }
+//   });
+//   return [fileList, dirList];
+// };
+
 
 // function checkResponse(message) {
 //     if (response.length > 0) {
@@ -197,7 +259,7 @@ function validateComponentFolders(subFoldersPath) {
 // }
 
 function checkResponse(message) {
-    response.push(message)
+    response.push(message);
 }
 
 module.exports = {
@@ -224,24 +286,28 @@ module.exports = {
             return validatefilesInRoot(folder);
         });
 
-        let empty = []
+        let empty = [];
         const final = filesCheck.forEach((res, iter) => {
-          const index = iter + 1
-          if ( index < filesCheck.length ){
-            empty = [].concat(res, filesCheck[index])
-          }
-        })
+            const index = iter + 1;
+            if (index < filesCheck.length) {
+                empty = [].concat(res, filesCheck[index]);
+            }
+        });
         //#endregion
-        
+
         // return validatefilesInRoot(relativePaths);
         // console.log('empty', empty);
-        console.log("subFolders",validateComponentFolders(store.getState().subFolders))
+        console.log(
+            'subFolders',
+            validateComponentFolders(store.getState().subFolders)
+        );
+        // validateComponentFolders(store.getState().subFolders)
         return ['0'];
     }
 };
 
 const getFolderPath = (stringPath) => {
-  // console.log("stringPath",stringPath)
+    // console.log("stringPath",stringPath)
     const query = getQueryArray(stringPath);
     const folderPath = path.join(...query.slice(0, 2));
     if (query[0] === 'packages' && isDir(folderPath)) {
@@ -279,6 +345,7 @@ const getFolderTree = (componentPackages) => {
 };
 
 const isDir = (fullPath) => fs.lstatSync(fullPath).isDirectory();
+const isFile = (fullPath) => fs.lstatSync(fullPath).isFile();
 
 const getRelativePaths = (absolutePaths) => {
     const cwd = process.cwd();
