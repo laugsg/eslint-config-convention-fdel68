@@ -4,6 +4,8 @@ Filesystem and Naming conventions for exports, variables, components name, requi
 
 Convention stablished in [FDEL68](https://cuponation.atlassian.net/jira/software/c/projects/FDEL/boards/322?modal=detail&selectedIssue=FDEL-68&assignee=6175c9a72097220071fda78e): Create Linting for package filesystem structure and naming convention.
 
+## Naming
+
 It requires two extra files that should be at the project root `convention-FDEL68-naming.config.js` and `convention-FDEL68.naming-rules.config.json`.
 
 convention-FDEL68-naming.config.js will receive just the commited files, then will filter them removing markdown files and json files to lint just component related ones.
@@ -16,18 +18,35 @@ Currently, to acheive the whole convention topics, the configuration is splitted
 
 As first step, install the convention as a NPM Package `yarn add --dev eslint-config-convention-FDEL68 -W`
 
+### Config
 
-* **Naming Config**
 1. project root : drop the files `convention-FDEL68-naming.config.js` and `convention-FDEL68.naming-rules.config.json`
 2. .husky/pre-commit : include in lint-staged command `yarn lint-staged --config convention-FDEL68-naming.config.js`
 
-* **File System Structure**
+## Acceptance Criteria
+
+* [x] Naming 
+    1. folder/filenames
+          1. should be kebab-case
+    2. types/Components
+          1. should be PascalCase
+    3. default export
+          1. should be named export
 
 
 
 
 
-## File System Structure to validate
+## File System Structure
+
+It requires one extra files that should be at the project root `convention-FDEL68-filesystem.config.js`.
+
+convention-FDEL68-filesystem.config.js will receive a list of commited files as an array of strings, then it will validate the component package folders structure (based in acceptance criteria) and it will check for required files.
+
+1. .husky/pre-commit : include in lint-staged command `yarn lint-staged --config convention-FDEL68-filesystem.config.js`
+
+
+## File System Structure Scheme
 
 * Query : Top Level
     1. packages/component-name
@@ -37,13 +56,7 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
 * Query : Src level
     1. ../component-files
     2. ../utils/
-* Constraint : Src level
-
-
-
-
-
-
+* Misc : Src level
 
 ## Acceptance Criteria
 
@@ -67,15 +80,16 @@ As first step, install the convention as a NPM Package `yarn add --dev eslint-co
       3. [x] unexpected folder name under /src (allowed only /components and /utils
       4. [x] should have a index file inside each folder
 
-## all sub-components should live inside src/components folder
+## theorical assumptions about sub-component folder
 
 A Compoenent package has the following structure:
+
 * Component folder (as root)
     * src folder (component files)
         * utils (inside src folder)
     * finally, files related to configs and testing
 
-Because of this structure, where src/ folder is the only folder in the component package, we could assume that _"any other folder wold be a sub-component"_. Then we can _invalidate_ the presence of any other folder than src.
+Because of this structure, where src/ and dist/ folders are the only folders in the component package, we could assume that _"any other folder would be a sub-component"_. Then it is possible to _invalidate_ the presence of any other folder than src.
 
 
 

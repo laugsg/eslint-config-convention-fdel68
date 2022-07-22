@@ -214,47 +214,58 @@ function checkResponse(message) {
 
 module.exports = {
     'packages/**': (absolutePaths) => {
-        const cwd = process.cwd();
-        const relativePaths = getRelativePaths(absolutePaths);
-
-        const componentPackages = [
-            ...new Set(
-                relativePaths.map((stringPath) => {
-                    return getFolderPath(stringPath);
-                })
-            )
-        ];
-
-        componentPackages.map((componentPath) =>
-            store.dispatch(addPackagePath(componentPath))
-        );
-
-        const componentTree = getFolderTree(store.getState().packagePath);
-
-        const filesCheck = componentTree.map((folder) => {
-            return validatefilesInRoot(folder);
-        });
-
-        let empty = [];
-        filesCheck.forEach((res, iter) => {
-            const index = iter + 1;
-            if (index < filesCheck.length) {
-                empty = [].concat(res, filesCheck[index]);
+        if(absolutePaths.length > 0){
+            /** Empty parameters as AbsolutPath
+             * Rules always are called,
+             * but receives an empty array when condition is not match.
+             * @NOTES
+             * An empty array will cause a fatal error. 
+             */
+            const cwd = process.cwd();
+            const relativePaths = getRelativePaths(absolutePaths);
+    
+            const componentPackages = [
+                ...new Set(
+                    relativePaths.map((stringPath) => {
+                        return getFolderPath(stringPath);
+                    })
+                )
+            ];
+    
+            componentPackages.map((componentPath) =>
+                store.dispatch(addPackagePath(componentPath))
+            );
+    
+            const componentTree = getFolderTree(store.getState().packagePath);
+    
+            const filesCheck = componentTree.map((folder) => {
+                return validatefilesInRoot(folder);
+            });
+    
+            let empty = [];
+            filesCheck.forEach((res, iter) => {
+                const index = iter + 1;
+                if (index < filesCheck.length) {
+                    empty = [].concat(res, filesCheck[index]);
+                }
+            });
+    
+            const foldersCheck = validateComponentFolders(
+                store.getState().subFolders
+            );
+    
+            let result;
+            if (empty.length){
+              empty.unshift('The test has fail:');
+              result = empty.concat(foldersCheck);
+            } else {
+              result = ['true']
             }
-        });
-
-        const foldersCheck = validateComponentFolders(
-            store.getState().subFolders
-        );
-
-        let result;
-        if (empty.length){
-          empty.unshift('The test has fail:');
-          result = empty.concat(foldersCheck);
-        } else {
-          result = ['true']
+            return result
         }
-        return result
+        else {
+            return ['true']
+        }
     }
 };
 
