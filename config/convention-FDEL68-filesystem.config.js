@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 
-//#region Store
 function createStore(reducer) {
     let state;
 
@@ -64,9 +63,7 @@ function initState(state = {}, action) {
     };
 }
 const store = createStore(initState);
-//#endregion
 
-//#region validatefilesInRoot
 let response = [];
 
 /**
@@ -150,7 +147,6 @@ function validatefilesInRoot(relativePaths) {
 
     return response;
 }
-//#endregion
 
 function validateComponentFolders(subFoldersPath) {
     response = [];
@@ -221,7 +217,6 @@ module.exports = {
         const cwd = process.cwd();
         const relativePaths = getRelativePaths(absolutePaths);
 
-        //#region : validate files
         const componentPackages = [
             ...new Set(
                 relativePaths.map((stringPath) => {
@@ -240,7 +235,6 @@ module.exports = {
             return validatefilesInRoot(folder);
         });
         console.log("filesCheck", filesCheck)
-        //#endregion
 
         let empty = [];
         filesCheck.forEach((res, iter) => {
