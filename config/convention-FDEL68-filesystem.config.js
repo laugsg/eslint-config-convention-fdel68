@@ -36,7 +36,6 @@ function addPackagePath(path) {
     };
 }
 function addSubFolder(path) {
-    // console.log("path", path);
     return {
         type: GET_SUBFOLDER_PATH,
         path
@@ -65,9 +64,6 @@ function initState(state = {}, action) {
     };
 }
 const store = createStore(initState);
-// store.subscribe(() => {
-//     console.log('The new state is:', store.getState());
-// });
 //#endregion
 
 //#region validatefilesInRoot
@@ -140,7 +136,6 @@ function validatefilesInRoot(relativePaths) {
                 folderRoute = `${query[0]}/${query[1]}`;
                 const validate = checkFilesInComponentRoot(item);
                 if (typeof validate === 'object') {
-                    // response = checkResponse(validate.message);
                     checkResponse(validate.message);
                 }
             }
@@ -149,7 +144,6 @@ function validatefilesInRoot(relativePaths) {
 
     Object.keys(filesInRoot).map((filename) => {
         if (checkFileIsNotPresent(filename)) {
-            // response = checkResponse(
             checkResponse(`${folderRoute} Should have ${filename} file.`);
         }
     });
@@ -168,31 +162,22 @@ function validateComponentFolders(subFoldersPath) {
             const baseSubFolder = getFolderTree([subFolder])[0].filter((path) =>
                 isDir(path)
             );
-            if(baseSubFolder.length){
-              baseSubFolder.forEach((dirPath, index) => {
-                  const dirQuery = getQueryArray(dirPath);
-                  console.log('dirQuery', dirQuery);
-                      if (dirQuery[3] !== 'components' && dirQuery[3] !== 'utils') {
+            if (baseSubFolder.length) {
+                baseSubFolder.forEach((dirPath) => {
+                    const dirQuery = getQueryArray(dirPath);
+                    if (
+                        dirQuery[3] !== 'components' &&
+                        dirQuery[3] !== 'utils'
+                    ) {
                         checkResponse(
-                              `Unexpected ${dirPath}/ folder name under /src (allowed only /components and /utils)`
-                          );
-                      }
-              });
+                            `Unexpected ${dirPath}/ folder name under /src (allowed only /components and /utils)`
+                        );
+                    }
+                });
             }
-            // const dirFolder = path.join(...query.slice(0, 4));
-            // console.log("query",baseSubFolder)
-            // if (isDir(baseSubFolder)) {
-            //     if (query[3] !== 'components' && query[3] !== 'utils') {
-            //         response = checkResponse(
-            //             `Unexpected ${path.join(
-            //                 ...query.slice(3, 4)
-            //             )}/ folder name under /src (allowed only /components and /utils)`
-            //         );
-            //     }
-            // }
         } else {
             checkResponse(
-                `${query[2]}/ as sub-component or utility should be under src/, only dist/ or src/ allowed in root.`
+                `${query[2]}/ as sub-component or utility should be under src/component or src/utils, only dist/ or src/ allowed in root.`
             );
         }
     });
@@ -254,29 +239,33 @@ module.exports = {
         const filesCheck = componentTree.map((folder) => {
             return validatefilesInRoot(folder);
         });
+        console.log("filesCheck", filesCheck)
+        //#endregion
 
         let empty = [];
-        const final = filesCheck.forEach((res, iter) => {
+        filesCheck.forEach((res, iter) => {
             const index = iter + 1;
             if (index < filesCheck.length) {
                 empty = [].concat(res, filesCheck[index]);
             }
         });
-        //#endregion
 
-        // return validatefilesInRoot(relativePaths);
-        // console.log('empty', empty);
-        console.log(
-            'subFolders',
-            validateComponentFolders(store.getState().subFolders)
+        const foldersCheck = validateComponentFolders(
+            store.getState().subFolders
         );
-        // validateComponentFolders(store.getState().subFolders)
-        return ['0'];
+
+        let result;
+        if (empty.length){
+          empty.unshift('The test has fail:');
+          result = empty.concat(foldersCheck);
+        } else {
+          result = ['true']
+        }
+        return result
     }
 };
 
 const getFolderPath = (stringPath) => {
-    // console.log("stringPath",stringPath)
     const query = getQueryArray(stringPath);
     const folderPath = path.join(...query.slice(0, 2));
     if (query[0] === 'packages' && isDir(folderPath)) {
@@ -302,7 +291,6 @@ const getFolderTree = (componentPackages) => {
             const fullPath = path.resolve(__dirname, folder, file);
             if (isDir(fullPath)) {
                 const folderPath = getRelativePaths([fullPath])[0];
-                // console.log('folderPath', folderPath);
                 store.dispatch(addSubFolder(folderPath));
             }
             const query = fullPath.split(path.sep);
