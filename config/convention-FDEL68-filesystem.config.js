@@ -243,12 +243,11 @@ module.exports = {
             });
     
             let empty = [];
-            filesCheck.forEach((res, iter) => {
-                const index = iter + 1;
-                if (index < filesCheck.length) {
-                    empty = [].concat(res, filesCheck[index]);
+            const cleanCheckFiles = filesCheck.filter( arr => {
+                if(arr.length > 0){
+                    empty = [].concat(arr);
                 }
-            });
+            })
     
             const foldersCheck = validateComponentFolders(
                 store.getState().subFolders
