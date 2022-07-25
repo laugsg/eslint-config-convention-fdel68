@@ -4,6 +4,10 @@ Filesystem and Naming conventions for exports, variables, components name, requi
 
 Convention stablished in [FDEL68](https://cuponation.atlassian.net/jira/software/c/projects/FDEL/boards/322?modal=detail&selectedIssue=FDEL-68&assignee=6175c9a72097220071fda78e): Create Linting for package filesystem structure and naming convention.
 
+## Installation
+
+The package is intalled as usual, it's required to move configuration files into `config/` folder to the root of the project. A yarn/npx command which executes lint-staged with this configuration files is also required (preferred from `.husky/pre-commit`) as `yarn lint-staged --config convention-FDEL68...` (one for each configuration).
+
 ## Naming
 
 It requires two extra files that should be at the project root `convention-FDEL68-naming.config.js` and `convention-FDEL68.naming-rules.config.json`.
