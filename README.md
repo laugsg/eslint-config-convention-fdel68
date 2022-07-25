@@ -60,14 +60,6 @@ convention-FDEL68-filesystem.config.js will receive a list of commited files as 
 
 ## Acceptance Criteria
 
-* [x] Naming 
-    1. folder/filenames
-          1. should be kebab-case
-    2. types/Components
-          1. should be PascalCase
-    3. default export
-          1. should be named export
-
 * File system
     * [x] component-name/ : Component level
         1. should have a README
